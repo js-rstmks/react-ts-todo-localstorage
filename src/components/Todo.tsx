@@ -21,7 +21,6 @@ const Todo = () => {
       const parsedData: [Todo] = JSON.parse(storedTodo)
         setTodos(parsedData)
     }
-
   }, [])
 
   const deleteTodo = (id: number) => {
@@ -49,17 +48,23 @@ const Todo = () => {
     const newTodos = todos?.map((_todo) => {
       return _todo.id === todo.id ? { ..._todo, ...todo } : { ..._todo }
     });
+    localStorage.setItem('todo', JSON.stringify(newTodos))
+
     setTodos(newTodos);
   };
 
   return (
     <>
+        <h1>LIST</h1>
+        <span>double click and You can edit content</span>
+        <div style={{marginTop: 30}}>
         { todos ? (
             <List todos={todos} deleteTodo={deleteTodo} updateTodo={updateTodo} />
         ) : (
             <p>No todos yet.</p>
         )
         }
+        </div>
       <Form createTodo={createTodo} />
     </>
   );
