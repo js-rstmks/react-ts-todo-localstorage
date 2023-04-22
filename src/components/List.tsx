@@ -1,14 +1,14 @@
 import { Item } from "./Item";
 import { Todo } from "./Todo";
 
-// 受け取るPropsの型を定義する
 type ListProps = {
-  todos: Todo[];
-  deleteTodo: Function;
-  updateTodo: Function;
+  todos: Todo[]
+  deleteTodo: Function
+  updateTodo: Function
+  moveTodo: Function
 };
 
-const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo }) => {
+const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo, moveTodo }) => {
   const complete = (id: number) => {
     deleteTodo(id)
   }
@@ -21,6 +21,7 @@ const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo }) => {
             todo={todo}
             complete={complete}
             updateTodo={updateTodo}
+            moveTodo={moveTodo}
           />
         );
       })}

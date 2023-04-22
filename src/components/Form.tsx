@@ -1,19 +1,22 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
+import { Todo } from "./Todo"
+
 
 // 受け取るPropsの型を定義する
 
 type FormProps = {
+    todos: Todo[]
     createTodo: Function
 }
 
-const Form: React.FC<FormProps> = ({ createTodo }) => {
+const Form: React.FC<FormProps> = ({ todos, createTodo }) => {
   const [enteredTodo, setEnteredTodo] = useState("");
 
   const addTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // 1e5 is a shorthand notation for the number 100000
     const newTodo = {
-      id: Math.floor(Math.random() * 1e5),
+      id: todos.length + 1,
       content: enteredTodo,
       editing: false
     }

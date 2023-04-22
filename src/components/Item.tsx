@@ -4,53 +4,61 @@ import { Todo } from "./Todo";
 // 受け取るPropsの型を定義する
 type ItemProps = {
   todo: Todo;
-  complete: Function;
-  updateTodo: Function;
+  complete: Function
+  updateTodo: Function
+  moveTodo: Function
 };
 
-export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo }) => {
+export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo }) => {
 // テキストのState管理
   const [editingContent, setEditingContent] = useState(todo.content);
 
-  // 編集状態の切り替え
-  const editMode = () => {
-    const newTodo = {
-      ...todo,
-      editing: !todo.editing,
+    const editMode = () => {
+        const newTodo = {
+        ...todo,
+        editing: !todo.editing,
+        };
+        updateTodo(newTodo)
     };
-    updateTodo(newTodo)
-  };
 
-// 編集を確定する
-  const confirmContent = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const newTodo = {
-      ...todo,
-      content: editingContent,
-      editing: !todo.editing,
-    };
-    updateTodo(newTodo);
-  };
+    // const clickUp = (fromIndex: number) => {
+    // const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        moveTodo(e.currentTarget.id)
+    }
 
-  return (
-    <div key={todo.id}>
-      <form onSubmit={confirmContent} style={{ display: "inline" }}>
-        <span onDoubleClick={editMode}>
-          {todo.editing ? (
-            <input
-              type="text"
-              placeholder="aaaaa"
-              value={editingContent}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setEditingContent(e.target.value)
-              }
-            />
-          ) : (
-            todo.content
-          )}
-        </span>
-      </form>
-      <button onClick={() => complete(todo.id)}>-</button>
-    </div>
-  );
+    const confirmContent = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const newTodo = {
+            ...todo,
+            content: editingContent,
+            editing: !todo.editing,
+        };
+        updateTodo(newTodo);
+    }
+
+    return (
+        <div key={todo.id}>
+            <button>DOWN</button>
+            <form onSubmit={confirmContent} style={{ display: "inline" }}>
+                <span onDoubleClick={editMode}>
+                {todo.editing ? (
+                    <input
+                    type="text"
+                    placeholder="enter updated content"
+                    value={editingContent}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEditingContent(e.target.value)
+                    }
+                    />
+                ) : (
+                    todo.content
+                )}
+                </span>
+            </form>
+            {/* <button id="{todo.id}" onClick={() => clickUp(todo.id)}>UP</button> */}
+            <button id={String(todo.id)} onClick={(e) => clickUp(e, todo.id)}>UP</button>
+            <button onClick={() => complete(todo.id)}>Delete</button>
+        </div>
+    )
 };
