@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Todo } from "./Todo";
+import { Button, TextField, Box, Typography } from '@mui/material';
+
 
 // 受け取るPropsの型を定義する
 type ItemProps = {
@@ -39,26 +41,34 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
 
     return (
         <div key={todo.id}>
-            <button>DOWN</button>
+            <Button>DOWN</Button>
             <form onSubmit={confirmContent} style={{ display: "inline" }}>
                 <span onDoubleClick={editMode}>
                 {todo.editing ? (
-                    <input
-                    type="text"
-                    placeholder="enter updated content"
-                    value={editingContent}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEditingContent(e.target.value)
-                    }
-                    />
+                    // <input
+                    // type="text"
+                    // placeholder="enter updated content"
+                    // value={editingContent}
+                    // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    //     setEditingContent(e.target.value)
+                    // }
+                    // />
+                    <TextField id="outlined-basic" 
+                        type="text"
+                        placeholder="enter updated content"
+                        color="success"
+                        label="enter updated content" variant="outlined" />
                 ) : (
-                    todo.content
+                    <Typography>
+                        todo.content
+                    </Typography>
                 )}
                 </span>
             </form>
-            {/* <button id="{todo.id}" onClick={() => clickUp(todo.id)}>UP</button> */}
-            <button id={String(todo.id)} onClick={(e) => clickUp(e, todo.id)}>UP</button>
-            <button onClick={() => complete(todo.id)}>Delete</button>
+            <Box sx={{ display: 'inline', m:2 }} >
+                <Button id={String(todo.id)} onClick={(e) => clickUp(e, todo.id)} variant="contained">Up</Button>
+            </Box>
+            <Button variant="contained" onClick={() => complete(todo.id)}>Delete</Button>
         </div>
     )
 };
