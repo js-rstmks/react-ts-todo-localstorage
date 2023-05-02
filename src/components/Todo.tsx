@@ -1,25 +1,33 @@
 import { useState, useEffect } from "react"
 import List from "./List"
 import Form from "./Form"
-import { parse } from "path"
+import {Box, Checkbox } from '@mui/material'
 
 export type Todo = {
     id: number
     content: string
     editing: boolean
+    checked: false
 }
 
 const Todo = () => {
-    // const [todos, setTodos] = useState<Todo[] | undefined>([])
     const [todos, setTodos] = useState<Todo[]>([])
+
+    const [checkedTodos, setCheckedTodos] = useState<Todo[]>([])
 
     useEffect(() => {
         const storedTodo = localStorage.getItem('todo');
+        const storedCheckedTodo = localStorage.getItem('CheckedTodo')
 
         if (storedTodo) {
             // array内にTodo typeのobjectがいくつかはいるため、[Todo]とかく
-        const parsedData: [Todo] = JSON.parse(storedTodo)
-            setTodos(parsedData)
+            const parsedTodo: [Todo] = JSON.parse(storedTodo)
+            setTodos(parsedTodo)
+        }
+
+        if (storedCheckedTodo){
+            const parsedCheckedTodo: [Todo] = JSON.parse(storedCheckedTodo)
+            setCheckedTodos(parsedCheckedTodo)
         }
     }, [])
 
@@ -39,6 +47,17 @@ const Todo = () => {
         })
         localStorage.setItem('todo', JSON.stringify(newTodos2))
         setTodos(newTodos2)
+    }
+
+    const transferToCheckedList = (id: number) => {
+        const newTodos = [...todos]
+        const transferredList = newTodos.splice(id - 1, 1)
+
+        console.log(transferredList)
+        console.log(newTodos)
+        setTodos(newTodos)
+        setCheckedTodos(transferredList)
+        localStorage.setItem('CheckedTodo', JSON.stringify(transferredList))
     }
 
     // up down move
@@ -77,42 +96,66 @@ const Todo = () => {
         setTodos(newTodos)
     }
 
-  const createTodo = (todo: Todo) => {
-    if (todos === undefined) {
-        setTodos([todo])
-      } else {
+    const createTodo = (todo: Todo) => {
         localStorage.setItem('todo', JSON.stringify([...todos, todo]))
         setTodos([...todos, todo])
-      }
-  }
+    }
 
-  const updateTodo = (todo: Todo) => {
-    const newTodos = todos?.map((_todo) => {
-      return _todo.id === todo.id ? { ..._todo, ...todo } : { ..._todo }
-    });
-    localStorage.setItem('todo', JSON.stringify(newTodos))
+    const updateTodo = (todo: Todo) => {
+        const newTodos = todos?.map((_todo) => {
+        return _todo.id === todo.id ? { ..._todo, ...todo } : { ..._todo }
+        });
+        localStorage.setItem('todo', JSON.stringify(newTodos))
 
-    setTodos(newTodos);
-  };
+        setTodos(newTodos);
+    };
 
   return (
     <>
-        <h1>LIST</h1>
-        <span>double click and You can edit content</span>
-        <div style={{marginTop: 30}}>
-        { todos ? (
-            <List todos={todos} 
-            deleteTodo={deleteTodo} 
-            updateTodo={updateTodo}
-            moveTodo={moveTodo} />
-        ) : (
-            <p>No todos yet.</p>
-        )
-        }
-        </div>
         <Form 
             todos={todos}
-            createTodo={createTodo} />
+            createTodo={createTodo} 
+        />
+        <Box sx={{ display: 'flex'}}>
+            <Box>
+                <h2>LIST</h2>
+                <span>double click and You can edit content</span>
+                <div style={{marginTop: 30}}>
+                { todos.length !== 0 ? (
+                    <List todos={todos} 
+                    deleteTodo={deleteTodo} 
+                    updateTodo={updateTodo}
+                    moveTodo={moveTodo}
+                    transferToCheckedList={transferToCheckedList}
+                     />
+                ) : (
+                    <p>No todos yet.</p>
+                )
+                }
+                </div>
+            </Box>
+
+            <Box>
+                <h2>Checked List</h2>
+
+                { checkedTodos.length !== 0 ? (
+                    <List todos={checkedTodos} 
+                    deleteTodo={deleteTodo} 
+                    updateTodo={updateTodo}
+                    moveTodo={moveTodo}
+                    transferToCheckedList={transferToCheckedList}
+                     />
+                ) : (
+                    <p>No Checkedtodos yet.</p>
+                )
+                }
+
+            </Box>
+
+
+        </Box>
+
+
     </>
   );
 };

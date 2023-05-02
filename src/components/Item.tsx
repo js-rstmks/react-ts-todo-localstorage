@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Todo } from "./Todo";
-import { Button, TextField, Box, Typography } from '@mui/material';
+import { Button, TextField, Box, Typography, Checkbox } from '@mui/material';
 
 // 受け取るPropsの型を定義する
 type ItemProps = {
@@ -8,9 +8,10 @@ type ItemProps = {
   complete: Function
   updateTodo: Function
   moveTodo: Function
+  transferToCheckedList: Function
 };
 
-export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo }) => {
+export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo, transferToCheckedList }) => {
 // テキストのState管理
   const [editingContent, setEditingContent] = useState(todo.content);
 
@@ -42,6 +43,11 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
         updateTodo(newTodo);
     }
 
+    const transferList = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.stopPropagation()
+        transferToCheckedList(e.target.id)
+    }
+
     return (
         <div key={todo.id}>
             <form onSubmit={confirmContent} style={{ display: "inline" }}>
@@ -56,9 +62,12 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
                         setEditingContent(e.target.value)
                     } />
                 ) : (
-                    <Typography>
-                        {todo.content}
-                    </Typography>
+                    <>
+                        <Checkbox onChange={(e) => transferList(e)}/>
+                        <Typography>
+                            {todo.content}
+                        </Typography>
+                    </>
                 )}
                 </span>
             </form>

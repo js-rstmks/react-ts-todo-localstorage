@@ -6,9 +6,10 @@ type ListProps = {
   deleteTodo: Function
   updateTodo: Function
   moveTodo: Function
+  transferToCheckedList: Function
 };
 
-const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo, moveTodo }) => {
+const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo, moveTodo, transferToCheckedList }) => {
   const complete = (id: number) => {
     deleteTodo(id)
   }
@@ -22,6 +23,7 @@ const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo, moveTodo }) 
             complete={complete}
             updateTodo={updateTodo}
             moveTodo={moveTodo}
+            transferToCheckedList={transferToCheckedList}
           />
         );
       })}

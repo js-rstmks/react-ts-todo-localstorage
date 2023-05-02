@@ -21,7 +21,6 @@ const Form: React.FC<FormProps> = ({ todos, createTodo }) => {
       editing: false
     }
 
-    console.log(newTodo)
     createTodo(newTodo)
     setEnteredTodo("")
   }
