@@ -42,40 +42,38 @@ const Todo = () => {
     }
 
     // up move
-    const moveTodo = (id: number) => {
+    const moveTodo = (id: number, orderChange: string) => {
         const newTodos = [...todos]
-        // const newTodos = todos.slice()
 
         const index = newTodos.findIndex(todo => todo.id == id);
         if (index === 0) {
           return;
         }
 
-        const prevContent: string = newTodos[index - 1].content
-        const prevId: number = newTodos[index - 1].id
         const indexContent: string = newTodos[index].content
         const indexId: number = newTodos[index].id
 
+        if (orderChange === 'up') {
+            const prevContent: string = newTodos[index - 1].content
+            const prevId: number = newTodos[index - 1].id
 
+            newTodos[index].id = prevId
+            newTodos[index].content = prevContent
+    
+            newTodos[index - 1].content = indexContent
+            newTodos[index - 1].id = indexId
+        } else if (orderChange === 'down') {
+            console.log(777)
+            const nextContent: string = newTodos[index - 1].content
+            const nextId: number = newTodos[index - 1].id
 
-        newTodos[index].id = prevId
-        newTodos[index].content = prevContent
-
-        newTodos[index - 1].content = indexContent
-        newTodos[index - 1].id = indexId
-
-      
-        // 一つ上のアイテムと入れ替える
-        //
-        // const temp = newTodos[index - 1];
-        // console.log(temp)
-        // console.log(newTodos[index])
-        // newTodos[index - 1] = newTodos[index];
-        // console.log(newTodos)
-        // newTodos[index] = temp;
-      
+            newTodos[index].id = nextId
+            newTodos[index].content = nextContent
+    
+            newTodos[index + 1].content = indexContent
+            newTodos[index + 1].id = indexId 
+        }
         localStorage.setItem('todo', JSON.stringify(newTodos))
-
         setTodos(newTodos)
     }
 

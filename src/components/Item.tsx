@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Todo } from "./Todo";
 import { Button, TextField, Box, Typography } from '@mui/material';
 
-
 // 受け取るPropsの型を定義する
 type ItemProps = {
   todo: Todo;
@@ -25,8 +24,12 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
 
     // const clickUp = (fromIndex: number) => {
     // const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
-        moveTodo(e.currentTarget.id)
+    const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        moveTodo(e.currentTarget.id, 'up')
+    }
+
+    const clickDown = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        moveTodo(e.currentTarget.id, 'down')
     }
 
     const confirmContent = (e: React.FormEvent<HTMLFormElement>) => {
@@ -45,19 +48,14 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
             <form onSubmit={confirmContent} style={{ display: "inline" }}>
                 <span onDoubleClick={editMode}>
                 {todo.editing ? (
-                    // <input
-                    // type="text"
-                    // placeholder="enter updated content"
-                    // value={editingContent}
-                    // onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    //     setEditingContent(e.target.value)
-                    // }
-                    // />
                     <TextField id="outlined-basic" 
                         type="text"
                         placeholder="enter updated content"
                         color="success"
-                        label="enter updated content" variant="outlined" />
+                        label="enter updated content" variant="outlined"
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEditingContent(e.target.value)
+                    } />
                 ) : (
                     <Typography>
                         {todo.content}
@@ -66,7 +64,12 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
                 </span>
             </form>
             <Box sx={{ display: 'inline', m:2 }} >
-                <Button id={String(todo.id)} onClick={(e) => clickUp(e, todo.id)} variant="contained">Up</Button>
+                <Button id={String(todo.id)} onClick={(e) => clickUp(e)} 
+                variant="contained">Up</Button>
+            </Box>
+            <Box sx={{ display: 'inline', m:2 }} >
+                <Button id={String(todo.id)} onClick={(e) => clickDown(e)} 
+                variant="contained">Down</Button>
             </Box>
             <Button variant="contained" onClick={() => complete(todo.id)}>Delete</Button>
         </div>
