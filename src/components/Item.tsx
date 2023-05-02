@@ -60,7 +60,7 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
                         label="enter updated content" variant="outlined" />
                 ) : (
                     <Typography>
-                        todo.content
+                        {todo.content}
                     </Typography>
                 )}
                 </span>
