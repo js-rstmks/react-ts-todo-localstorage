@@ -41,13 +41,13 @@ const Todo = () => {
         setTodos(newTodos2)
     }
 
-    // up move
+    // up down move
     const moveTodo = (id: number, orderChange: string) => {
         const newTodos = [...todos]
 
         const index = newTodos.findIndex(todo => todo.id == id);
-        if (index === 0) {
-          return;
+        if ((orderChange === 'up' && index === 0) || (orderChange === 'down' && index === newTodos.length - 1)) {
+            return 
         }
 
         const indexContent: string = newTodos[index].content
@@ -62,10 +62,10 @@ const Todo = () => {
     
             newTodos[index - 1].content = indexContent
             newTodos[index - 1].id = indexId
+
         } else if (orderChange === 'down') {
-            console.log(777)
-            const nextContent: string = newTodos[index - 1].content
-            const nextId: number = newTodos[index - 1].id
+            const nextContent: string = newTodos[index + 1].content
+            const nextId: number = newTodos[index + 1].id
 
             newTodos[index].id = nextId
             newTodos[index].content = nextContent

@@ -44,7 +44,6 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
 
     return (
         <div key={todo.id}>
-            <Button>DOWN</Button>
             <form onSubmit={confirmContent} style={{ display: "inline" }}>
                 <span onDoubleClick={editMode}>
                 {todo.editing ? (
