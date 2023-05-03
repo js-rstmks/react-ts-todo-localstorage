@@ -1,6 +1,7 @@
 import { Item } from "./Item";
 import { Todo } from "./Todo";
 
+
 type ListProps = {
   todos: Todo[]
   deleteTodo: Function
@@ -17,14 +18,14 @@ const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo, moveTodo, tr
     <div>
       {todos?.map((todo) => {
         return (
-          <Item
-            key={todo.id}
-            todo={todo}
-            complete={complete}
-            updateTodo={updateTodo}
-            moveTodo={moveTodo}
-            transferToCheckedList={transferToCheckedList}
-          />
+                <Item
+                key={todo.id}
+                todo={todo}
+                complete={complete}
+                updateTodo={updateTodo}
+                moveTodo={moveTodo}
+                transferToCheckedList={transferToCheckedList}
+                />
         );
       })}
     </div>

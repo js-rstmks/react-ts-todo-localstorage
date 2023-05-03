@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react"
 import List from "./List"
 import Form from "./Form"
-import {Box, Checkbox } from '@mui/material'
+import {Box} from '@mui/material'
 
 export type Todo = {
     id: number
     content: string
     editing: boolean
-    checked: false
+    // checked: boolean
 }
 
 const Todo = () => {
@@ -16,24 +16,32 @@ const Todo = () => {
     const [checkedTodos, setCheckedTodos] = useState<Todo[]>([])
 
     useEffect(() => {
-        const storedTodo = localStorage.getItem('todo');
-        const storedCheckedTodo = localStorage.getItem('CheckedTodo')
+        const storedTodos = localStorage.getItem('todo');
+        const storedCheckedTodos = localStorage.getItem('CheckedTodo')
 
-        if (storedTodo) {
+        if (storedTodos) {
             // array内にTodo typeのobjectがいくつかはいるため、[Todo]とかく
-            const parsedTodo: [Todo] = JSON.parse(storedTodo)
-            setTodos(parsedTodo)
+            const parsedTodos: [Todo] = JSON.parse(storedTodos)
+            setTodos(parsedTodos)
         }
 
-        if (storedCheckedTodo){
-            const parsedCheckedTodo: [Todo] = JSON.parse(storedCheckedTodo)
-            setCheckedTodos(parsedCheckedTodo)
+        if (storedCheckedTodos){
+            const parsedCheckedTodos: [Todo] = JSON.parse(storedCheckedTodos)
+            setCheckedTodos(parsedCheckedTodos)
         }
     }, [])
 
-    const deleteTodo = (id: number) => {
+    // const setAndLocalStorage = (key: string, todosArray: Todo[]) => {
+    //     console.log(todosArray)
+    //     setTodos(todosArray)
+    //     localStorage.setItem(key , JSON.stringify(todosArray))
+    // }
+
+    // const deleteTodo = (id: number) => {
+    const deleteTodo = (id: number, checked: boolean ,originalTodos: [Todo]) => {
         // 指定したidで削除
-        const newTodos1 = todos?.filter((todo) => {
+        // const newTodos1 = todos?.filter((todo) => {
+        const newTodos1 = originalTodos?.filter((todo) => {
             return todo.id !== id;
         })
         // idをつめる
@@ -45,19 +53,24 @@ const Todo = () => {
                 return todo
             }
         })
+        if (checked === false) {
+            
+        }
         localStorage.setItem('todo', JSON.stringify(newTodos2))
         setTodos(newTodos2)
     }
 
     const transferToCheckedList = (id: number) => {
         const newTodos = [...todos]
-        const transferredList = newTodos.splice(id - 1, 1)
+        const transferredTodo = newTodos.splice(id - 1, 1)
 
-        console.log(transferredList)
-        console.log(newTodos)
         setTodos(newTodos)
-        setCheckedTodos(transferredList)
-        localStorage.setItem('CheckedTodo', JSON.stringify(transferredList))
+        localStorage.setItem('todo', JSON.stringify(newTodos))
+        // setAndLocalStorage('todo', newTodos)
+
+        setCheckedTodos(transferredTodo)
+        localStorage.setItem('CheckedTodo', JSON.stringify([...checkedTodos, transferredTodo]))
+        // setAndLocalStorage('CheckedTodo', transferredList)
     }
 
     // up down move
@@ -114,6 +127,7 @@ const Todo = () => {
     <>
         <Form 
             todos={todos}
+            checkedTodos={checkedTodos}
             createTodo={createTodo} 
         />
         <Box sx={{ display: 'flex'}}>
@@ -121,17 +135,17 @@ const Todo = () => {
                 <h2>LIST</h2>
                 <span>double click and You can edit content</span>
                 <div style={{marginTop: 30}}>
-                { todos.length !== 0 ? (
-                    <List todos={todos} 
-                    deleteTodo={deleteTodo} 
-                    updateTodo={updateTodo}
-                    moveTodo={moveTodo}
-                    transferToCheckedList={transferToCheckedList}
-                     />
-                ) : (
-                    <p>No todos yet.</p>
-                )
-                }
+                    { todos.length !== 0 ? (
+                        <List todos={todos} 
+                            deleteTodo={deleteTodo} 
+                            updateTodo={updateTodo}
+                            moveTodo={moveTodo}
+                            transferToCheckedList={transferToCheckedList}
+                        />
+                        ) : (
+                            <p>No todos yet.</p>
+                        )
+                    }
                 </div>
             </Box>
 
@@ -146,16 +160,11 @@ const Todo = () => {
                     transferToCheckedList={transferToCheckedList}
                      />
                 ) : (
-                    <p>No Checkedtodos yet.</p>
+                    <p>No CheckedTodos yet.</p>
                 )
                 }
-
             </Box>
-
-
         </Box>
-
-
     </>
   );
 };

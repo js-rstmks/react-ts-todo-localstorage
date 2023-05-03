@@ -23,7 +23,6 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
         updateTodo(newTodo)
     };
 
-    // const clickUp = (fromIndex: number) => {
     // const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         moveTodo(e.currentTarget.id, 'up')
@@ -39,13 +38,18 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
             ...todo,
             content: editingContent,
             editing: !todo.editing,
-        };
-        updateTodo(newTodo);
+        }
+        updateTodo(newTodo)
     }
 
     const transferList = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.stopPropagation()
         transferToCheckedList(e.target.id)
+        // const checkedTodo = {
+        //     ...todo,
+        //     checked: true
+        // }
+        // updateTodo(checkedTodo)
     }
 
     return (
