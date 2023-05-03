@@ -53,22 +53,28 @@ const Todo = () => {
                 return todo
             }
         })
+
         if (checked === false) {
-            
+            localStorage.setItem('todo', JSON.stringify(newTodos2))
+            setTodos(newTodos2)
+        } else {
+            localStorage.setItem('CheckedTodo', JSON.stringify(newTodos2))
+            setTodos(newTodos2)
         }
-        localStorage.setItem('todo', JSON.stringify(newTodos2))
-        setTodos(newTodos2)
     }
 
     const transferToCheckedList = (id: number) => {
         const newTodos = [...todos]
-        const transferredTodo = newTodos.splice(id - 1, 1)
+        const transferredTodos: Todo[] = newTodos.splice(id - 1, 1)
 
+        const transferredTodo: string = t
+
+        console.log(transferredTodo)
         setTodos(newTodos)
         localStorage.setItem('todo', JSON.stringify(newTodos))
         // setAndLocalStorage('todo', newTodos)
 
-        setCheckedTodos(transferredTodo)
+        setCheckedTodos([...checkedTodos, transferredTodo])
         localStorage.setItem('CheckedTodo', JSON.stringify([...checkedTodos, transferredTodo]))
         // setAndLocalStorage('CheckedTodo', transferredList)
     }
@@ -136,7 +142,7 @@ const Todo = () => {
                 <span>double click and You can edit content</span>
                 <div style={{marginTop: 30}}>
                     { todos.length !== 0 ? (
-                        <List todos={todos} 
+                        <List todos={todos}
                             deleteTodo={deleteTodo} 
                             updateTodo={updateTodo}
                             moveTodo={moveTodo}
