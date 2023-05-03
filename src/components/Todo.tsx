@@ -23,12 +23,12 @@ const Todo = () => {
 
         if (storedTodos) {
             // array内にTodo typeのobjectがいくつかはいるため、[Todo]とかく
-            const parsedTodos: [Todo] = JSON.parse(storedTodos)
+            const parsedTodos: Todo[] = JSON.parse(storedTodos)
             setTodos(parsedTodos)
         }
 
         if (storedCheckedTodos){
-            const parsedCheckedTodos: [Todo] = JSON.parse(storedCheckedTodos)
+            const parsedCheckedTodos: Todo[] = JSON.parse(storedCheckedTodos)
             setCheckedTodos(parsedCheckedTodos)
         }
     }, [])
@@ -42,7 +42,6 @@ const Todo = () => {
 
 
     const deleteTodo = (id: number, checkedFlg: boolean) => {
-    // const deleteTodo = (id: number, checked: boolean ,originalTodos: [Todo]) => {
 
         if (!checkedFlg) {
             // 指定したidで削除
@@ -54,7 +53,7 @@ const Todo = () => {
             localStorage.setItem('todo', JSON.stringify(newTodos1))
             setTodos(newTodos1)
         } else {
-            const newTodos1 = checkedTodos?.filter((todo) => {
+            const newTodos1: Todo[] = checkedTodos?.filter((todo) => {
                 // const newTodos1 = originalTodos?.filter((todo) => {
                     return todo.id !== id
             })
@@ -63,45 +62,41 @@ const Todo = () => {
         }
     }
 
-    // いきなり一つの関数にまとめるのではなく、まずは重複したコードをかいてでも実装を優先する
-    const deleteCheckedTodo = (id: number) => {
-        const newTodos1 = checkedTodos?.filter((todo) => {
-            // const newTodos1 = originalTodos?.filter((todo) => {
-                return todo.id !== id
-            })
-
-        localStorage.setItem('CheckedTodo', JSON.stringify(newTodos1))
-        setCheckedTodos(newTodos1)
-    }
-
     // チェックリストへ移行
     const transferToCheckedList = (id: number, passedTodo: Todo) => {
-        const newTodos = [...todos]
 
-        const index = newTodos.findIndex(todo => todo.id == id)
-        console.log(index)
+        const aaa: string = '...todos'
 
-        // checked property変更
-        const newTodos2 = newTodos?.map((_todo) => {
-            return _todo.id === passedTodo.id ? { ..._todo, ...passedTodo} : { ..._todo } 
-        })
+        // クリックが入っていなかったら
+        if (passedTodo.checked) {
 
-        console.log(newTodos2)
-        const transferredTodos: Todo[] = newTodos2.splice(index, 1)
+            const newTodos = [...todos]
+            const index = newTodos.findIndex(todo => todo.id == id)
 
-        const transferredTodo: Todo = transferredTodos[0]
+            // checked property変更
+            const newTodos2 = newTodos?.map((_todo) => {
+                return _todo.id === passedTodo.id ? { ..._todo, ...passedTodo} : { ..._todo } 
+            })
+    
+            console.log(newTodos2)
+            const transferredTodos: Todo[] = newTodos2.splice(index, 1)
+    
+            const transferredTodo: Todo = transferredTodos[0]
+    
+            // transferredTodo.checkedItem_order = todos.length + checkedTodos.length + 100
+            transferredTodo.checkedItem_order = checkedTodos.length + 100
+    
+            setTodos(newTodos2)
+            localStorage.setItem('todo', JSON.stringify(newTodos2))
+            // setAndLocalStorage('todo', newTodos)
+    
+    
+            setCheckedTodos([transferredTodo, ...checkedTodos])
+            localStorage.setItem('CheckedTodo', JSON.stringify([transferredTodo, ...checkedTodos]))
+            // setAndLocalStorage('CheckedTodo', transferredList)
+        } else {
 
-        // transferredTodo.checkedItem_order = todos.length + checkedTodos.length + 100
-        transferredTodo.checkedItem_order = checkedTodos.length + 100
-
-        setTodos(newTodos2)
-        localStorage.setItem('todo', JSON.stringify(newTodos2))
-        // setAndLocalStorage('todo', newTodos)
-
-
-        setCheckedTodos([transferredTodo, ...checkedTodos])
-        localStorage.setItem('CheckedTodo', JSON.stringify([transferredTodo, ...checkedTodos]))
-        // setAndLocalStorage('CheckedTodo', transferredList)
+        }
 
     }
 
@@ -204,12 +199,12 @@ const Todo = () => {
 
                 { checkedTodos.length !== 0 ? (
                     <List todos={checkedTodos} 
-                    // deleteTodo={deleteTodo} 
-                    deleteTodo={deleteCheckedTodo} 
-                    updateTodo={updateTodo}
-                    // moveTodo={moveTodo}
-                    moveTodo={moveCheckedTodo}
-                    transferToCheckedList={transferToCheckedList}
+                        deleteTodo={deleteTodo} 
+                        // deleteTodo={deleteCheckedTodo} 
+                        updateTodo={updateTodo}
+                        // moveTodo={moveTodo}
+                        moveTodo={moveCheckedTodo}
+                        transferToCheckedList={transferToCheckedList}
                      />
                 ) : (
                     <p>No CheckedTodos yet.</p>
