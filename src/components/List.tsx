@@ -11,21 +11,18 @@ type ListProps = {
 };
 
 const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo, moveTodo, transferToCheckedList }) => {
-    const complete = (id: number) => {
-        deleteTodo(id)
-    }
     return (
         <div>
         {todos?.map((todo) => {
             return (
                 <Item
-                key={todo.id}
-                todo={todo}
-                todos={todos}
-                complete={complete}
-                updateTodo={updateTodo}
-                moveTodo={moveTodo}
-                transferToCheckedList={transferToCheckedList}
+                    key={todo.id}
+                    todo={todo}
+                    // complete={complete}
+                    deleteTodo={deleteTodo}
+                    updateTodo={updateTodo}
+                    moveTodo={moveTodo}
+                    transferToCheckedList={transferToCheckedList}
                 />
             );
         })}

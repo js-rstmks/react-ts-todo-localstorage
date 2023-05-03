@@ -41,22 +41,26 @@ const Todo = () => {
 
 
 
-    const deleteTodo = (id: number) => {
+    const deleteTodo = (id: number, checkedFlg: boolean) => {
     // const deleteTodo = (id: number, checked: boolean ,originalTodos: [Todo]) => {
 
-        // 指定したidで削除
-        const newTodos1 = todos?.filter((todo) => {
-        // const newTodos1 = originalTodos?.filter((todo) => {
-            return todo.id !== id
-        })
+        if (!checkedFlg) {
+            // 指定したidで削除
+            const newTodos1 = todos?.filter((todo) => {
+            // const newTodos1 = originalTodos?.filter((todo) => {
+                return todo.id !== id
+            })
 
-        // if (checked === false) {
             localStorage.setItem('todo', JSON.stringify(newTodos1))
             setTodos(newTodos1)
-        // } else {
-            // localStorage.setItem('CheckedTodo', JSON.stringify(newTodos2))
-            // setCheckedTodos(newTodos2)
-        // }
+        } else {
+            const newTodos1 = checkedTodos?.filter((todo) => {
+                // const newTodos1 = originalTodos?.filter((todo) => {
+                    return todo.id !== id
+            })
+            localStorage.setItem('CheckedTodo', JSON.stringify(newTodos1))
+            setCheckedTodos(newTodos1)
+        }
     }
 
     // いきなり一つの関数にまとめるのではなく、まずは重複したコードをかいてでも実装を優先する
@@ -74,18 +78,21 @@ const Todo = () => {
     const transferToCheckedList = (id: number, passedTodo: Todo) => {
         const newTodos = [...todos]
 
-        // 
+        const index = newTodos.findIndex(todo => todo.id == id)
+        console.log(index)
+
+        // checked property変更
         const newTodos2 = newTodos?.map((_todo) => {
             return _todo.id === passedTodo.id ? { ..._todo, ...passedTodo} : { ..._todo } 
         })
 
         console.log(newTodos2)
-        const transferredTodos: Todo[] = newTodos2.splice(id, 1)
+        const transferredTodos: Todo[] = newTodos2.splice(index, 1)
 
         const transferredTodo: Todo = transferredTodos[0]
 
         // transferredTodo.checkedItem_order = todos.length + checkedTodos.length + 100
-        // transferredTodo.checkedItem_order = checkedTodos.length + 100
+        transferredTodo.checkedItem_order = checkedTodos.length + 100
 
         setTodos(newTodos2)
         localStorage.setItem('todo', JSON.stringify(newTodos2))
@@ -113,7 +120,7 @@ const Todo = () => {
         const newTodos = [...todos]
 
         // クリックしたitemの配列内におけるインデックス
-        const index = newTodos.findIndex(todo => todo.id == id);
+        const index = newTodos.findIndex(todo => todo.id == id)
         if ((orderChange === 'up' && index === 0) || (orderChange === 'down' && index === newTodos.length - 1)) {
             return
         }
@@ -137,8 +144,6 @@ const Todo = () => {
 
     const moveCheckedTodo = (id: number, orderChange: string) => {
         const newTodos = [...checkedTodos]
-
-        console.log(67667676)
 
         // クリックしたitemの配列内におけるインデックス
         const index = newTodos.findIndex(todo => todo.id == id);

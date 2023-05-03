@@ -12,6 +12,9 @@ const Form: React.FC<FormProps> = ({ todos, checkedTodos, createTodo }) => {
 
   const addTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (enteredTodo === "") {
+        return
+    }
 
     // checkedItem_orderはcheckedListに移されたときに値を設定する。
     const newTodo: Todo = {
