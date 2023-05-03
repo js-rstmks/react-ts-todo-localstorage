@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { Todo } from "./Todo";
-import { Button, TextField, Box, Typography } from '@mui/material';
+import { Button, TextField, Box, Typography, Checkbox } from '@mui/material';
 
 // 受け取るPropsの型を定義する
 type ItemProps = {
-  todo: Todo;
-  complete: Function
-  updateTodo: Function
-  moveTodo: Function
+    todo: Todo;
+    deleteTodo: Function
+    updateTodo: Function
+    moveTodo: Function
+    transferToCheckedList: Function
 };
 
-export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo }) => {
+export const Item: React.FC<ItemProps> = ({ todo, deleteTodo, updateTodo, moveTodo, transferToCheckedList }) => {
 // テキストのState管理
   const [editingContent, setEditingContent] = useState(todo.content);
 
@@ -22,9 +23,8 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
         updateTodo(newTodo)
     };
 
-    // const clickUp = (fromIndex: number) => {
-    // const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        console.log(e.currentTarget.id)
         moveTodo(e.currentTarget.id, 'up')
     }
 
@@ -38,8 +38,18 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
             ...todo,
             content: editingContent,
             editing: !todo.editing,
-        };
-        updateTodo(newTodo);
+        }
+        updateTodo(newTodo)
+    }
+
+    const transferList = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.stopPropagation()
+        const newTodo = {
+            ...todo,
+            checked: !todo.checked
+        }
+        console.log(e.currentTarget.id)
+        transferToCheckedList(e.target.id, newTodo)
     }
 
     return (
@@ -56,9 +66,16 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
                         setEditingContent(e.target.value)
                     } />
                 ) : (
-                    <Typography>
-                        {todo.content}
-                    </Typography>
+                    <>
+                        {todo.checked === false ? (
+                            <Checkbox id={String(todo.id)} onChange={(e) => transferList(e)}/>
+                            ) : (
+                            <Checkbox id={String(todo.id)} onChange={(e) => transferList(e)} checked/>
+                            )}
+                        <Typography>
+                            {todo.content}
+                        </Typography>
+                    </>
                 )}
                 </span>
             </form>
@@ -70,7 +87,11 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
                 <Button id={String(todo.id)} onClick={(e) => clickDown(e)} 
                 variant="contained">Down</Button>
             </Box>
-            <Button variant="contained" onClick={() => complete(todo.id)}>Delete</Button>
+            {todo.checked ? (
+                <Button variant="contained" onClick={() => deleteTodo(todo.id, true)}>Delete</Button>
+            ) : (
+                <Button variant="contained" onClick={() => deleteTodo(todo.id, false)}>Delete</Button>
+            )}
         </div>
     )
 };

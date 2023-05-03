@@ -1,118 +1,217 @@
 import { useState, useEffect } from "react"
 import List from "./List"
 import Form from "./Form"
-import { parse } from "path"
+import {Box} from '@mui/material'
 
 export type Todo = {
     id: number
     content: string
     editing: boolean
+    checked: boolean
+    item_order: number
+    checkedItem_order: number
 }
 
 const Todo = () => {
-    // const [todos, setTodos] = useState<Todo[] | undefined>([])
     const [todos, setTodos] = useState<Todo[]>([])
 
-    useEffect(() => {
-        const storedTodo = localStorage.getItem('todo');
+    const [checkedTodos, setCheckedTodos] = useState<Todo[]>([])
 
-        if (storedTodo) {
+    useEffect(() => {
+        const storedTodos = localStorage.getItem('todo');
+        const storedCheckedTodos = localStorage.getItem('CheckedTodo')
+
+        if (storedTodos) {
             // array内にTodo typeのobjectがいくつかはいるため、[Todo]とかく
-        const parsedData: [Todo] = JSON.parse(storedTodo)
-            setTodos(parsedData)
+            const parsedTodos: Todo[] = JSON.parse(storedTodos)
+            setTodos(parsedTodos)
+        }
+
+        if (storedCheckedTodos){
+            const parsedCheckedTodos: Todo[] = JSON.parse(storedCheckedTodos)
+            setCheckedTodos(parsedCheckedTodos)
         }
     }, [])
 
-    const deleteTodo = (id: number) => {
-        // 指定したidで削除
-        const newTodos1 = todos?.filter((todo) => {
-            return todo.id !== id;
-        })
-        // idをつめる
-        // ex)1,3,4,5を1,2,3,4とする
-        const newTodos2 = newTodos1?.map((todo) => {
-            if (todo.id > id) {
-                return {...todo, id: todo.id - 1}
-            } else {
-                return todo
-            }
-        })
-        localStorage.setItem('todo', JSON.stringify(newTodos2))
-        setTodos(newTodos2)
+    // const setAndLocalStorage = (key: string, todosArray: Todo[]) => {
+    //     console.log(todosArray)
+    //     setTodos(todosArray)
+    //     localStorage.setItem(key , JSON.stringify(todosArray))
+    // }
+
+
+
+    const deleteTodo = (id: number, checkedFlg: boolean) => {
+
+        if (!checkedFlg) {
+            // 指定したidで削除
+            const newTodos1 = todos?.filter((todo) => {
+            // const newTodos1 = originalTodos?.filter((todo) => {
+                return todo.id !== id
+            })
+
+            localStorage.setItem('todo', JSON.stringify(newTodos1))
+            setTodos(newTodos1)
+        } else {
+            const newTodos1: Todo[] = checkedTodos?.filter((todo) => {
+                // const newTodos1 = originalTodos?.filter((todo) => {
+                    return todo.id !== id
+            })
+            localStorage.setItem('CheckedTodo', JSON.stringify(newTodos1))
+            setCheckedTodos(newTodos1)
+        }
     }
+
+    // チェックリストへ移行
+    const transferToCheckedList = (id: number, passedTodo: Todo) => {
+
+        const aaa: string = '...todos'
+
+        // クリックが入っていなかったら
+        if (passedTodo.checked) {
+
+            const newTodos = [...todos]
+            const index = newTodos.findIndex(todo => todo.id == id)
+
+            // checked property変更
+            const newTodos2 = newTodos?.map((_todo) => {
+                return _todo.id === passedTodo.id ? { ..._todo, ...passedTodo} : { ..._todo } 
+            })
+    
+            console.log(newTodos2)
+            const transferredTodos: Todo[] = newTodos2.splice(index, 1)
+    
+            const transferredTodo: Todo = transferredTodos[0]
+    
+            // transferredTodo.checkedItem_order = todos.length + checkedTodos.length + 100
+            transferredTodo.checkedItem_order = checkedTodos.length + 100
+    
+            setTodos(newTodos2)
+            localStorage.setItem('todo', JSON.stringify(newTodos2))
+            // setAndLocalStorage('todo', newTodos)
+    
+    
+            setCheckedTodos([transferredTodo, ...checkedTodos])
+            localStorage.setItem('CheckedTodo', JSON.stringify([transferredTodo, ...checkedTodos]))
+            // setAndLocalStorage('CheckedTodo', transferredList)
+        } else {
+
+        }
+
+    }
+
+    const updateTodo = (passedTodo: Todo) => {
+        const newTodos = todos?.map((_todo) => {
+            return _todo.id === passedTodo.id ? { ..._todo, ...passedTodo } : { ..._todo }
+        });
+        console.log(newTodos)
+        localStorage.setItem('todo', JSON.stringify(newTodos))
+
+        setTodos(newTodos);
+    };
 
     // up down move
     const moveTodo = (id: number, orderChange: string) => {
         const newTodos = [...todos]
 
-        const index = newTodos.findIndex(todo => todo.id == id);
+        // クリックしたitemの配列内におけるインデックス
+        const index = newTodos.findIndex(todo => todo.id == id)
         if ((orderChange === 'up' && index === 0) || (orderChange === 'down' && index === newTodos.length - 1)) {
-            return 
+            return
         }
-
-        const indexContent: string = newTodos[index].content
-        const indexId: number = newTodos[index].id
 
         if (orderChange === 'up') {
-            const prevContent: string = newTodos[index - 1].content
-            const prevId: number = newTodos[index - 1].id
-
-            newTodos[index].id = prevId
-            newTodos[index].content = prevContent
-    
-            newTodos[index - 1].content = indexContent
-            newTodos[index - 1].id = indexId
+            newTodos[index].item_order = newTodos[index].item_order + 1
+            newTodos[index - 1].item_order = newTodos[index].item_order - 1
 
         } else if (orderChange === 'down') {
-            const nextContent: string = newTodos[index + 1].content
-            const nextId: number = newTodos[index + 1].id
-
-            newTodos[index].id = nextId
-            newTodos[index].content = nextContent
-    
-            newTodos[index + 1].content = indexContent
-            newTodos[index + 1].id = indexId 
+            newTodos[index].item_order = newTodos[index].item_order - 1
+            newTodos[index + 1].item_order = newTodos[index].item_order + 1
         }
+
+        // item_orderの降順に配列内のオブジェクトを入れ替える
+        newTodos.sort((a, b) => b.item_order - a.item_order)
+
+        console.log(newTodos)
         localStorage.setItem('todo', JSON.stringify(newTodos))
         setTodos(newTodos)
     }
 
-  const createTodo = (todo: Todo) => {
-    if (todos === undefined) {
-        setTodos([todo])
-      } else {
-        localStorage.setItem('todo', JSON.stringify([...todos, todo]))
-        setTodos([...todos, todo])
-      }
-  }
+    const moveCheckedTodo = (id: number, orderChange: string) => {
+        const newTodos = [...checkedTodos]
 
-  const updateTodo = (todo: Todo) => {
-    const newTodos = todos?.map((_todo) => {
-      return _todo.id === todo.id ? { ..._todo, ...todo } : { ..._todo }
-    });
-    localStorage.setItem('todo', JSON.stringify(newTodos))
+        // クリックしたitemの配列内におけるインデックス
+        const index = newTodos.findIndex(todo => todo.id == id);
+        if ((orderChange === 'up' && index === 0) || (orderChange === 'down' && index === newTodos.length - 1)) {
+            return
+        }
 
-    setTodos(newTodos);
-  };
+        if (orderChange === 'up') {
+            newTodos[index].checkedItem_order = newTodos[index].checkedItem_order + 1
+            newTodos[index - 1].checkedItem_order = newTodos[index].checkedItem_order - 1
+
+        } else if (orderChange === 'down') {
+            newTodos[index].checkedItem_order = newTodos[index].checkedItem_order - 1
+            newTodos[index + 1].checkedItem_order = newTodos[index].checkedItem_order + 1
+        }
+
+        newTodos.sort((a, b) => b.item_order - a.item_order)
+
+
+        setCheckedTodos(newTodos)
+        localStorage.setItem('CheckedTodo', JSON.stringify(newTodos))
+    }
+
+    const createTodo = (todo: Todo) => {
+        localStorage.setItem('todo', JSON.stringify([todo, ...todos]))
+        setTodos([todo, ...todos])
+    }
+
 
   return (
     <>
-        <h1>LIST</h1>
-        <span>double click and You can edit content</span>
-        <div style={{marginTop: 30}}>
-        { todos ? (
-            <List todos={todos} 
-            deleteTodo={deleteTodo} 
-            updateTodo={updateTodo}
-            moveTodo={moveTodo} />
-        ) : (
-            <p>No todos yet.</p>
-        )
-        }
-        </div>
         <Form 
             todos={todos}
-            createTodo={createTodo} />
+            checkedTodos={checkedTodos}
+            createTodo={createTodo} 
+        />
+        <Box sx={{ display: 'flex'}}>
+            <Box>
+                <h2>LIST</h2>
+                <span>double click and You can edit content</span>
+                <div style={{marginTop: 30}}>
+                    { todos.length !== 0 ? (
+                        <List todos={todos}
+                            deleteTodo={deleteTodo} 
+                            updateTodo={updateTodo}
+                            moveTodo={moveTodo}
+                            transferToCheckedList={transferToCheckedList}
+                        />
+                        ) : (
+                            <p>No todos yet.</p>
+                        )
+                    }
+                </div>
+            </Box>
+
+            <Box>
+                <h2>Checked List</h2>
+
+                { checkedTodos.length !== 0 ? (
+                    <List todos={checkedTodos} 
+                        deleteTodo={deleteTodo} 
+                        // deleteTodo={deleteCheckedTodo} 
+                        updateTodo={updateTodo}
+                        // moveTodo={moveTodo}
+                        moveTodo={moveCheckedTodo}
+                        transferToCheckedList={transferToCheckedList}
+                     />
+                ) : (
+                    <p>No CheckedTodos yet.</p>
+                )
+                }
+            </Box>
+        </Box>
     </>
   );
 };
