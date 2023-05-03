@@ -4,11 +4,11 @@ import { Button, TextField, Box, Typography, Checkbox } from '@mui/material';
 
 // 受け取るPropsの型を定義する
 type ItemProps = {
-  todo: Todo;
-  complete: Function
-  updateTodo: Function
-  moveTodo: Function
-  transferToCheckedList: Function
+    todo: Todo;
+    complete: Function
+    updateTodo: Function
+    moveTodo: Function
+    transferToCheckedList: Function
 };
 
 export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo, transferToCheckedList }) => {
@@ -23,7 +23,6 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
         updateTodo(newTodo)
     };
 
-    // const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const clickUp = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         moveTodo(e.currentTarget.id, 'up')
     }
@@ -48,7 +47,6 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
             ...todo,
             checked: !todo.checked
         }
-        // updateTodo(newTodo)
         transferToCheckedList(e.target.id, newTodo)
     }
 
@@ -67,7 +65,11 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
                     } />
                 ) : (
                     <>
-                        <Checkbox onChange={(e) => transferList(e)}/>
+                        {todo.checked === false ? (
+                            <Checkbox onChange={(e) => transferList(e)}/>
+                            ) : (
+                            <Checkbox onChange={(e) => transferList(e)} checked/>
+                            )}
                         <Typography>
                             {todo.content}
                         </Typography>

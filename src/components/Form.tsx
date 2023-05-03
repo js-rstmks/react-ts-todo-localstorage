@@ -12,13 +12,15 @@ const Form: React.FC<FormProps> = ({ todos, checkedTodos, createTodo }) => {
 
   const addTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // 1e5 is a shorthand notation for the number 100000
+
+    // checkedItem_orderはcheckedListに移されたときに値を設定する。
     const newTodo: Todo = {
       id: todos.length + checkedTodos.length + 1,
       content: enteredTodo,
       editing: false,
       checked: false,
-      item_order: 
+      item_order: todos.length + 100,
+      checkedItem_order: 0
     }
 
     createTodo(newTodo)
