@@ -12,7 +12,7 @@ type ListProps = {
 
 const List: React.FC<ListProps> = ({ todos, deleteTodo, updateTodo, moveTodo, transferToCheckedList }) => {
   const complete = (id: number) => {
-    deleteTodo(id)
+    deleteTodo(id, todos)
   }
   return (
     <div>

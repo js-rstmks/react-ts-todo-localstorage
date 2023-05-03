@@ -44,12 +44,12 @@ export const Item: React.FC<ItemProps> = ({ todo, complete, updateTodo, moveTodo
 
     const transferList = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.stopPropagation()
-        transferToCheckedList(e.target.id)
-        // const checkedTodo = {
-        //     ...todo,
-        //     checked: true
-        // }
-        // updateTodo(checkedTodo)
+        const newTodo = {
+            ...todo,
+            checked: !todo.checked
+        }
+        // updateTodo(newTodo)
+        transferToCheckedList(e.target.id, newTodo)
     }
 
     return (

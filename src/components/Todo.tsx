@@ -7,7 +7,8 @@ export type Todo = {
     id: number
     content: string
     editing: boolean
-    // checked: boolean
+    checked: boolean
+    item_order: number
 }
 
 const Todo = () => {
@@ -37,14 +38,16 @@ const Todo = () => {
     //     localStorage.setItem(key , JSON.stringify(todosArray))
     // }
 
-    // const deleteTodo = (id: number) => {
-    const deleteTodo = (id: number, checked: boolean ,originalTodos: [Todo]) => {
+
+
+    const deleteTodo = (id: number) => {
+    // const deleteTodo = (id: number, checked: boolean ,originalTodos: [Todo]) => {
         // 指定したidで削除
-        // const newTodos1 = todos?.filter((todo) => {
-        const newTodos1 = originalTodos?.filter((todo) => {
-            return todo.id !== id;
+        const newTodos1 = todos?.filter((todo) => {
+        // const newTodos1 = originalTodos?.filter((todo) => {
+            return todo.id !== id
         })
-        // idをつめる
+        // idをつめる（up&downの処理のために)
         // ex)1,3,4,5を1,2,3,4とする
         const newTodos2 = newTodos1?.map((todo) => {
             if (todo.id > id) {
@@ -54,30 +57,60 @@ const Todo = () => {
             }
         })
 
-        if (checked === false) {
+        // if (checked === false) {
             localStorage.setItem('todo', JSON.stringify(newTodos2))
             setTodos(newTodos2)
-        } else {
-            localStorage.setItem('CheckedTodo', JSON.stringify(newTodos2))
-            setTodos(newTodos2)
-        }
+        // } else {
+            // localStorage.setItem('CheckedTodo', JSON.stringify(newTodos2))
+            // setTodos(newTodos2)
+        // }
     }
 
-    const transferToCheckedList = (id: number) => {
-        const newTodos = [...todos]
-        const transferredTodos: Todo[] = newTodos.splice(id - 1, 1)
+    // いきなり一つの関数にまとめるのではなく、まずは重複したコードをかいてでも実装を優先する
+    const deleteCheckedTodo = (id: number) => {
 
-        const transferredTodo: string = t
+    }
+
+    // チェックリストへ移行
+    const transferToCheckedList = (id: number, passedTodo: Todo) => {
+        const newTodos = [...todos]
+
+        // console.log(passedTodo.id)
+
+        // console.log(newTodos)
+        console.log(id)
+
+        const newTodos2 = newTodos?.map((_todo) => {
+            return _todo.id === passedTodo.id ? { ..._todo, ...passedTodo} : { ..._todo } 
+        })
+
+        console.log(newTodos2)
+        // const transferredTodos: Todo[] = newTodos2.splice(id - 1, 1)
+        const transferredTodos: Todo[] = newTodos2.splice(id, 1)
+
+        const transferredTodo: Todo = transferredTodos[0]
 
         console.log(transferredTodo)
-        setTodos(newTodos)
-        localStorage.setItem('todo', JSON.stringify(newTodos))
+        setTodos(newTodos2)
+        localStorage.setItem('todo', JSON.stringify(newTodos2))
         // setAndLocalStorage('todo', newTodos)
+
 
         setCheckedTodos([...checkedTodos, transferredTodo])
         localStorage.setItem('CheckedTodo', JSON.stringify([...checkedTodos, transferredTodo]))
         // setAndLocalStorage('CheckedTodo', transferredList)
+
     }
+
+    const updateTodo = (passedTodo: Todo) => {
+        const newTodos = todos?.map((_todo) => {
+            return _todo.id === passedTodo.id ? { ..._todo, ...passedTodo } : { ..._todo }
+        });
+        console.log(newTodos)
+        localStorage.setItem('todo', JSON.stringify(newTodos))
+
+        setTodos(newTodos);
+    };
 
     // up down move
     const moveTodo = (id: number, orderChange: string) => {
@@ -85,7 +118,7 @@ const Todo = () => {
 
         const index = newTodos.findIndex(todo => todo.id == id);
         if ((orderChange === 'up' && index === 0) || (orderChange === 'down' && index === newTodos.length - 1)) {
-            return 
+            return
         }
 
         const indexContent: string = newTodos[index].content
@@ -120,14 +153,6 @@ const Todo = () => {
         setTodos([...todos, todo])
     }
 
-    const updateTodo = (todo: Todo) => {
-        const newTodos = todos?.map((_todo) => {
-        return _todo.id === todo.id ? { ..._todo, ...todo } : { ..._todo }
-        });
-        localStorage.setItem('todo', JSON.stringify(newTodos))
-
-        setTodos(newTodos);
-    };
 
   return (
     <>
@@ -160,7 +185,7 @@ const Todo = () => {
 
                 { checkedTodos.length !== 0 ? (
                     <List todos={checkedTodos} 
-                    deleteTodo={deleteTodo} 
+                    deleteTodo={deleteCheckedTodo} 
                     updateTodo={updateTodo}
                     moveTodo={moveTodo}
                     transferToCheckedList={transferToCheckedList}

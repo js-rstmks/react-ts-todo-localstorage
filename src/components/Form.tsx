@@ -17,7 +17,8 @@ const Form: React.FC<FormProps> = ({ todos, checkedTodos, createTodo }) => {
       id: todos.length + checkedTodos.length + 1,
       content: enteredTodo,
       editing: false,
-    //   checked: false
+      checked: false,
+      item_order: 
     }
 
     createTodo(newTodo)
